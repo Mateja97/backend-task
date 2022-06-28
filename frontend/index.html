@@ -1,0 +1,30 @@
+
+<html>
+   <head>
+   </head>
+   <body>
+      <h1>Price change:</h1>
+      <div id="container"></div>
+      <script type="text/javascript">
+         var test = document.getElementById("test");
+         var exampleSocket = new WebSocket("ws://localhost:8082/price/change")
+
+         var update = function(){
+           exampleSocket.onmessage = function (event) {
+            values = JSON.parse(event.data)
+            const personsMap = Object.entries(values);
+            for(var x of personsMap.keys()){
+               var div = `<div class="cols">
+                  `+personsMap[x][0] + `   $` +  personsMap[x][1]+ ` </div>`;
+               
+               document.getElementById("container").innerHTML = div;
+            }
+            Object.values(values).map((amount) => {
+               console.log(amount)
+            })
+           }
+         };
+         window.setTimeout(update);
+      </script>
+   </body>
+</html>
