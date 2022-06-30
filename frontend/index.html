@@ -1,9 +1,9 @@
 
 <html>
    <head>
+      <h1>Price change:</h1>
    </head>
    <body>
-      <h1>Price change:</h1>
       <div id="container"></div>
       <script type="text/javascript">
          var test = document.getElementById("test");
@@ -11,13 +11,16 @@
 
          var update = function(){
            exampleSocket.onmessage = function (event) {
+
             values = JSON.parse(event.data)
+            document.getElementById('container').innerHTML = ""
             const personsMap = Object.entries(values);
+
             for(var x of personsMap.keys()){
-               var div = `<div class="cols">
-                  `+personsMap[x][0] + `   $` +  personsMap[x][1]+ ` </div>`;
-               
-               document.getElementById("container").innerHTML = div;
+               var div = document.createElement('div');
+               var inner = ``+personsMap[x][0] + `   $` +  personsMap[x][1];
+               div.innerHTML = inner
+               document.getElementById('container').appendChild(div);
             }
             Object.values(values).map((amount) => {
                console.log(amount)

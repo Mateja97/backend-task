@@ -1,15 +1,13 @@
 package chaintracker
 
 import (
-	"backend-task/internal/chain"
-	"backend-task/internal/storage"
-	"bytes"
+	"backend-task/backend/chain"
+	"backend-task/backend/kafka"
+	"backend-task/backend/storage"
 	"context"
-	"encoding/json"
 	"fmt"
 	"log"
 	"math/big"
-	"net/http"
 	"strings"
 
 	"github.com/ethereum/go-ethereum"
@@ -25,11 +23,10 @@ type ChainTracker struct {
 	Logs            chan types.Log
 	ABI             abi.ABI
 	Sub             ethereum.Subscription
-	ServerURL       string
+	producer        kafka.KafkaProducer
 }
 
-func (ct *ChainTracker) Init(port, contract, network, server string) error {
-	ct.ServerURL = server
+func (ct *ChainTracker) Init(port, contract, network, topic string, brokers []string) error {
 	ct.ContractAddress = common.HexToAddress(contract)
 	var err error
 	ct.EthClient, err = ethclient.Dial(network)
@@ -52,6 +49,11 @@ func (ct *ChainTracker) Init(port, contract, network, server string) error {
 	if err != nil {
 		return err
 	}
+	err = ct.producer.Init(brokers, topic)
+	if err != nil {
+		log.Println("[ERROR] Producer init failed")
+		return err
+	}
 
 	return nil
 }
@@ -71,12 +73,11 @@ func (ct *ChainTracker) Run() {
 				continue
 			}
 			fmt.Println(e[0], "   ", e[1])
-			ct.SendToServer(e)
-			//fmt.Println(reflect.TypeOf(e[0]), "   ", reflect.TypeOf(e[1]))
-			/*entity := chain.ChainEntity{
+			entity := chain.ChainEntity{
 				Symbol: e[0].(string),
 				Amount: e[1].(*big.Int),
-			}*/
+			}
+			ct.producer.SendMessage(entity)
 
 		}
 	}
@@ -86,19 +87,4 @@ func (ct *ChainTracker) Stop() {
 	ct.Sub.Unsubscribe()
 	ct.EthClient.Close()
 	log.Println("Graceful shutdown complete.")
-}
-
-func (ct *ChainTracker) SendToServer(e []interface{}) {
-	requestBody, err := json.Marshal(chain.ChainEntity{
-		Symbol: e[0].(string),
-		Amount: e[1].(*big.Int),
-	})
-	if err != nil {
-		log.Println("[ERROR] SendToServer. Failed to Marshall data", err.Error())
-	}
-	_, err = http.Post(ct.ServerURL+"/price/chain", "application/json", bytes.NewBuffer(requestBody))
-	if err != nil {
-		log.Println("[ERROR] SendToServer. Failed to post data for :", string(requestBody), err.Error())
-	}
-	log.Println("[INFO] Data sent to: ", ct.ServerURL)
 }

@@ -11,7 +11,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type Coin struct {
+type CoinGecko struct {
 	MarketData MarketData `json:"market_data,omitempty"`
 }
 type MarketData struct {
@@ -19,14 +19,14 @@ type MarketData struct {
 }
 type Price map[string]float64
 
-func GetCoin(id string) Coin {
+func GetCoin(id string) CoinGecko {
 	url := fmt.Sprintf("https://api.coingecko.com/api/v3/coins/" + id)
 	resp, err := http.Get(url)
 	if err != nil {
 		log.Println("[ERROR] GetRates request failed", err)
 	}
 	defer resp.Body.Close()
-	var conv Coin
+	var conv CoinGecko
 	if err := json.NewDecoder(resp.Body).Decode(&conv); err != nil {
 		log.Fatal("Decoding rates failed")
 	}

@@ -1,4 +1,4 @@
-package util
+package cors
 
 import (
 	"net/http"
