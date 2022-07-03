@@ -51,10 +51,11 @@ func (kC *KafkaConsumer) ConsumeMessage(ch chan *sarama.ConsumerMessage) {
 }
 
 func (kC *KafkaConsumer) Stop() error {
-	log.Println("Subscriber stopped")
 	if err := kC.consumer.Close(); err != nil {
 		log.Println("[ERROR] Consumer close failed")
 		return err
 	}
+	log.Println("[INFO] Kafka Consumer stopped gracefully")
+
 	return nil
 }

@@ -30,12 +30,34 @@ var (
 
 // StorageMetaData contains all meta data concerning the Storage contract.
 var StorageMetaData = &bind.MetaData{
-	ABI: "[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"Sent\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"name\":\"coins\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"set\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
+	ABI: "[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"time\",\"type\":\"uint256\"}],\"name\":\"Sent\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"name\":\"coins\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"set\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
+	Bin: "0x608060405234801561001057600080fd5b50610723806100206000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c80630a7896021461003b5780638a42ebe91461006b575b600080fd5b61005560048036038101906100509190610271565b610087565b6040516100629190610427565b60405180910390f35b610085600480360381019061008091906102ba565b6100b5565b005b6000818051602081018201805184825260208301602085012081835280955050505050506000915090505481565b60646000836040516100c791906103b2565b90815260200160405180910390205460026100e291906104f0565b6100ec91906104bf565b6101148260008560405161010091906103b2565b9081526020016040518091039020546101bc565b111561017d578060008360405161012b91906103b2565b9081526020016040518091039020819055507fca022b99c592bbe8ea70fa4ded405f1cad24d7b013184a4683787abbf8086c73828242604051610170939291906103c9565b60405180910390a16101b8565b6040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016101af90610407565b60405180910390fd5b5050565b6000818310156101d75782826101d2919061054a565b6101e4565b81836101e3919061054a565b5b905092915050565b60006101ff6101fa84610467565b610442565b90508281526020810184848401111561021b5761021a61068d565b5b610226848285610588565b509392505050565b600082601f83011261024357610242610688565b5b81356102538482602086016101ec565b91505092915050565b60008135905061026b816106d6565b92915050565b60006020828403121561028757610286610697565b5b600082013567ffffffffffffffff8111156102a5576102a4610692565b5b6102b18482850161022e565b91505092915050565b600080604083850312156102d1576102d0610697565b5b600083013567ffffffffffffffff8111156102ef576102ee610692565b5b6102fb8582860161022e565b925050602061030c8582860161025c565b9150509250929050565b600061032182610498565b61032b81856104a3565b935061033b818560208601610597565b6103448161069c565b840191505092915050565b600061035a82610498565b61036481856104b4565b9350610374818560208601610597565b80840191505092915050565b600061038d601f836104a3565b9150610398826106ad565b602082019050919050565b6103ac8161057e565b82525050565b60006103be828461034f565b915081905092915050565b600060608201905081810360008301526103e38186610316565b90506103f260208301856103a3565b6103ff60408301846103a3565b949350505050565b6000602082019050818103600083015261042081610380565b9050919050565b600060208201905061043c60008301846103a3565b92915050565b600061044c61045d565b905061045882826105ca565b919050565b6000604051905090565b600067ffffffffffffffff82111561048257610481610659565b5b61048b8261069c565b9050602081019050919050565b600081519050919050565b600082825260208201905092915050565b600081905092915050565b60006104ca8261057e565b91506104d58361057e565b9250826104e5576104e461062a565b5b828204905092915050565b60006104fb8261057e565b91506105068361057e565b9250817fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff048311821515161561053f5761053e6105fb565b5b828202905092915050565b60006105558261057e565b91506105608361057e565b925082821015610573576105726105fb565b5b828203905092915050565b6000819050919050565b82818337600083830152505050565b60005b838110156105b557808201518184015260208101905061059a565b838111156105c4576000848401525b50505050565b6105d38261069c565b810181811067ffffffffffffffff821117156105f2576105f1610659565b5b80604052505050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052601160045260246000fd5b7f4e487b7100000000000000000000000000000000000000000000000000000000600052601260045260246000fd5b7f4e487b7100000000000000000000000000000000000000000000000000000000600052604160045260246000fd5b600080fd5b600080fd5b600080fd5b600080fd5b6000601f19601f8301169050919050565b7f50726963652073696d696c617220746f20636f6e747261637420707269636500600082015250565b6106df8161057e565b81146106ea57600080fd5b5056fea264697066735822122022c0cbac2778e2d2138d12e2bc4b2233e25a7afc4668bdcd37132095cbf8a0cb64736f6c63430008070033",
 }
 
 // StorageABI is the input ABI used to generate the binding from.
 // Deprecated: Use StorageMetaData.ABI instead.
 var StorageABI = StorageMetaData.ABI
+
+// StorageBin is the compiled bytecode used for deploying new contracts.
+// Deprecated: Use StorageMetaData.Bin instead.
+var StorageBin = StorageMetaData.Bin
+
+// DeployStorage deploys a new Ethereum contract, binding an instance of Storage to it.
+func DeployStorage(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *Storage, error) {
+	parsed, err := StorageMetaData.GetAbi()
+	if err != nil {
+		return common.Address{}, nil, nil, err
+	}
+	if parsed == nil {
+		return common.Address{}, nil, nil, errors.New("GetABI returned nil")
+	}
+
+	address, tx, contract, err := bind.DeployContract(auth, *parsed, common.FromHex(StorageBin), backend)
+	if err != nil {
+		return common.Address{}, nil, nil, err
+	}
+	return address, tx, &Storage{StorageCaller: StorageCaller{contract: contract}, StorageTransactor: StorageTransactor{contract: contract}, StorageFilterer: StorageFilterer{contract: contract}}, nil
+}
 
 // Storage is an auto generated Go binding around an Ethereum contract.
 type Storage struct {
@@ -302,12 +324,13 @@ func (it *StorageSentIterator) Close() error {
 type StorageSent struct {
 	Symbol string
 	Amount *big.Int
+	Time   *big.Int
 	Raw    types.Log // Blockchain specific contextual infos
 }
 
-// FilterSent is a free log retrieval operation binding the contract event 0x7b831d1b36678ca89bc3d5713eb11198ceddee1dcb36c86baa6165fd2d5fe8d4.
+// FilterSent is a free log retrieval operation binding the contract event 0xca022b99c592bbe8ea70fa4ded405f1cad24d7b013184a4683787abbf8086c73.
 //
-// Solidity: event Sent(string symbol, uint256 amount)
+// Solidity: event Sent(string symbol, uint256 amount, uint256 time)
 func (_Storage *StorageFilterer) FilterSent(opts *bind.FilterOpts) (*StorageSentIterator, error) {
 
 	logs, sub, err := _Storage.contract.FilterLogs(opts, "Sent")
@@ -317,9 +340,9 @@ func (_Storage *StorageFilterer) FilterSent(opts *bind.FilterOpts) (*StorageSent
 	return &StorageSentIterator{contract: _Storage.contract, event: "Sent", logs: logs, sub: sub}, nil
 }
 
-// WatchSent is a free log subscription operation binding the contract event 0x7b831d1b36678ca89bc3d5713eb11198ceddee1dcb36c86baa6165fd2d5fe8d4.
+// WatchSent is a free log subscription operation binding the contract event 0xca022b99c592bbe8ea70fa4ded405f1cad24d7b013184a4683787abbf8086c73.
 //
-// Solidity: event Sent(string symbol, uint256 amount)
+// Solidity: event Sent(string symbol, uint256 amount, uint256 time)
 func (_Storage *StorageFilterer) WatchSent(opts *bind.WatchOpts, sink chan<- *StorageSent) (event.Subscription, error) {
 
 	logs, sub, err := _Storage.contract.WatchLogs(opts, "Sent")
@@ -354,9 +377,9 @@ func (_Storage *StorageFilterer) WatchSent(opts *bind.WatchOpts, sink chan<- *St
 	}), nil
 }
 
-// ParseSent is a log parse operation binding the contract event 0x7b831d1b36678ca89bc3d5713eb11198ceddee1dcb36c86baa6165fd2d5fe8d4.
+// ParseSent is a log parse operation binding the contract event 0xca022b99c592bbe8ea70fa4ded405f1cad24d7b013184a4683787abbf8086c73.
 //
-// Solidity: event Sent(string symbol, uint256 amount)
+// Solidity: event Sent(string symbol, uint256 amount, uint256 time)
 func (_Storage *StorageFilterer) ParseSent(log types.Log) (*StorageSent, error) {
 	event := new(StorageSent)
 	if err := _Storage.contract.UnpackLog(event, "Sent", log); err != nil {

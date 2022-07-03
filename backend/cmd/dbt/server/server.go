@@ -8,6 +8,7 @@ import (
 	socket "backend-task/backend/websocket"
 	"encoding/json"
 	"fmt"
+	"io"
 
 	"context"
 	"log"
@@ -43,7 +44,7 @@ func (s *Server) Init(port, wsPort, publisher, topic string, brokers []string) e
 
 	//Server for rest api
 	r := mux.NewRouter()
-	r.HandleFunc("/price/{icmd/chaintrackerd}/history/{date}", rates.CoinHistory()).Methods("GET")
+	r.HandleFunc("/price/{id}/history/{date}", s.CoinHistory()).Methods("GET")
 	r.HandleFunc("/price/chain", s.cc.ChainValue(s.chEntity)).Methods("POST")
 	s.s = &http.Server{
 		Addr:    port,
@@ -74,11 +75,15 @@ func (s *Server) Run() {
 	go func() {
 		for {
 			e := <-s.kafkaMessages //Waiting for onchain change
-			s.SentWS(e)
+			//Store to cache
+			s.cc.StoreCache(e)
+			//Send te chain values to websocket client
+			s.cc.WriteChainCacheToClients(socket.Clients)
+
 		}
 	}()
 
-	for {
+	/*for {
 		<-s.ticker.C
 		btc := rates.GetCoin("bitcoin")
 		eth := rates.GetCoin("ethereum")
@@ -89,7 +94,7 @@ func (s *Server) Run() {
 		fmt.Println()
 		fmt.Printf("eth: $%.2f", ethPrice)
 		fmt.Println()
-	}
+	}*/
 
 }
 func (s *Server) Stop() {
@@ -112,16 +117,47 @@ func (s *Server) Stop() {
 	log.Println("Graceful shutdown complete.")
 }
 
-func (s *Server) SentWS(e *sarama.ConsumerMessage) {
-	var entity chain.ChainEntity
-	err := json.Unmarshal(e.Value, &entity)
-	if err != nil {
-		log.Println("[ERROR] Unmarshaling entity failed", err)
-		return
+func (s *Server) CoinHistory() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		id := vars["id"]
+		date := vars["date"]
+
+		layout := "02-01-2006"
+		reqTime, err := time.Parse(layout, date)
+		if err != nil {
+			log.Println("[ERROR]", err)
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Wrong date format"))
+		}
+		url := fmt.Sprintf("https://api.coingecko.com/api/v3/coins/%s/history?date=%s", id, date)
+		resp, err := http.Get(url)
+		if err != nil {
+			log.Println("[ERROR] CoinHistory request failed", err)
+		}
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			log.Println("[ERROR] CoinHistory read alls failed", err)
+		}
+		var c rates.CoinGecko
+		if err := json.Unmarshal(body, &c); err != nil { // Parse []byte to go struct pointer
+			fmt.Println("[ERROR]Unmarshal CoinGecko failed", err)
+		}
+		t := time.Date(reqTime.Year(), reqTime.Month(), reqTime.Day(), 0, 0, 0, 0, time.UTC)
+		log.Println(url)
+		coinGecko := fmt.Sprintf("%f", c.MarketData.CurrentPrice["usd"])
+		HistoryResponse := rates.HistoryResponse{
+			ID: id,
+			Values: rates.HistoryValues{
+				OnChain: s.cc.ChainValuesHistory[c.Symbol][t.Format(layout)],
+				OnGecko: coinGecko,
+			},
+		}
+		data, err := json.Marshal(HistoryResponse)
+		if err != nil {
+			log.Println("[ERROR] Marshaling history responsefailed: ", err)
+
+		}
+		w.Write(data)
 	}
-	if entity == (chain.ChainEntity{}) {
-		return
-	}
-	s.cc.ChainValues[entity.Symbol] = entity.Amount.String()
-	s.cc.WriteChainCacheToClients(socket.Clients)
 }

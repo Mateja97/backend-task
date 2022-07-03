@@ -3,7 +3,7 @@ package rates
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"time"
@@ -12,7 +12,17 @@ import (
 )
 
 type CoinGecko struct {
+	Id         string     `json:"id,omitempty"`
+	Symbol     string     `json:"symbol,omitempty"`
 	MarketData MarketData `json:"market_data,omitempty"`
+}
+type HistoryResponse struct {
+	ID     string
+	Values HistoryValues
+}
+type HistoryValues struct {
+	OnChain string
+	OnGecko string
 }
 type MarketData struct {
 	CurrentPrice Price `json:"current_price,omitempty"`
@@ -34,7 +44,7 @@ func GetCoin(id string) CoinGecko {
 	return conv
 }
 
-func CoinHistory() http.HandlerFunc {
+func CoinHistory(hisResp HistoryResponse) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		id := vars["id"]
@@ -48,16 +58,26 @@ func CoinHistory() http.HandlerFunc {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte("Wrong date format"))
 		}
-		url := fmt.Sprintf("https://api.coingecko.com/api/v3/coins/%s/history&date=%s", id, date)
+		url := fmt.Sprintf("https://api.coingecko.com/api/v3/coins/%s/history?date=%s", id, date)
 		log.Println(url)
 		resp, err := http.Get(url)
 		if err != nil {
 			log.Println("[ERROR] CoinHistory request failed", err)
 		}
-		data, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
-			log.Println("[ERROR]", err)
+			log.Println("[ERROR] CoinHistory read alls failed", err)
 		}
-		w.Write(data)
+		var c CoinGecko
+		if err := json.Unmarshal(body, &c); err != nil { // Parse []byte to go struct pointer
+			fmt.Println("Can not unmarshal JSON")
+		}
+		if err != nil {
+			log.Println("[ERROR] Coin decode: ", err)
+		}
+		if err != nil {
+			log.Println("[ERROR] Coin decode: ", err)
+		}
+		w.Write(body)
 	}
 }

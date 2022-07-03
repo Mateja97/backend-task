@@ -10,12 +10,11 @@ pragma solidity >=0.7.0 <0.9.0;
 contract Storage {
 
     mapping(string => uint) public coins;
-
-    event Sent(string symbol, uint amount);
+    event Sent(string symbol, uint amount,uint time);
    function set(string memory symbol,uint amount) public {
        if(calculate(amount, coins[symbol])> 2*coins[symbol]/100){
            coins[symbol] = amount;
-           emit Sent(symbol,amount);
+           emit Sent(symbol,amount,block.timestamp);
        } else{
            revert("Price similar to contract price");
        }
