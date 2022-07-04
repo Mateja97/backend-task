@@ -16,6 +16,7 @@ import (
 
 func (cp *ChainPublisher) PublishToChain() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		log.Println("[INFO] PublishToChain")
 		nonce, err := cp.client.PendingNonceAt(context.Background(), cp.wallet)
 		if err != nil {
 			log.Fatal(err)
@@ -37,17 +38,19 @@ func (cp *ChainPublisher) PublishToChain() http.HandlerFunc {
 			log.Fatal(err)
 		}
 
-		var entity chain.ChainEntity
+		var req chain.ChainEntity
 		decoder := json.NewDecoder(r.Body)
-		err = decoder.Decode(&entity)
+		err = decoder.Decode(&req)
 		if err != nil {
 			log.Println("[ERROR] ChainValue Decoding failed", err)
 			return
 		}
-		tx, err := instance.Set(auth, entity.Symbol, entity.Amount)
+
+		tx, err := instance.Set(auth, req.Symbol, req.Amount)
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Printf("tx sent: %s", tx.Hash().Hex())
+		fmt.Println("[INFO] Data sent: ", req.Symbol, " ", req.Amount)
+		fmt.Println("tx sent: ", tx.Hash().Hex())
 	}
 }

@@ -19,6 +19,7 @@ type WebSocket struct {
 	ws *http.Server
 }
 
+//NewHandler returns connection to the client
 func NewHandler(w http.ResponseWriter, r *http.Request) (*websocket.Conn, error) {
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {

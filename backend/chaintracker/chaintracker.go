@@ -79,6 +79,7 @@ func (ct *ChainTracker) Run() {
 					log.Println("Cannot unpack log", err.Error())
 					continue
 				}
+				//Parse date from the chain to Date string
 				date := time.Unix(e[2].(*big.Int).Int64(), 0)
 				layout := "02-01-2006"
 				t := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, time.UTC)
@@ -87,6 +88,8 @@ func (ct *ChainTracker) Run() {
 					Amount: e[1].(*big.Int),
 					Date:   t.Format(layout),
 				}
+
+				log.Println("[INFO] Entity sent to the kafka", entity)
 				//Send chain entity to the kafka
 				ct.producer.SendMessage(entity)
 

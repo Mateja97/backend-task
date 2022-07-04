@@ -21,6 +21,11 @@ type ChainPublisher struct {
 	pk       *ecdsa.PrivateKey
 }
 
+type PublishRequest struct {
+	Symbol string `json:"symbol,omitempty"`
+	Amount string `json:"amount,omitempty"`
+}
+
 func (cp *ChainPublisher) Init(network, privateKey, contract, port string) error {
 
 	cp.contract = contract
@@ -39,8 +44,8 @@ func (cp *ChainPublisher) Init(network, privateKey, contract, port string) error
 	if !ok {
 		return err
 	}
-
 	cp.wallet = crypto.PubkeyToAddress(*publicKeyECDSA)
+
 	r := mux.NewRouter()
 	r.HandleFunc("/publish", cp.PublishToChain()).Methods("POST")
 	cp.server = &http.Server{

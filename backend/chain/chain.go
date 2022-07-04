@@ -31,6 +31,7 @@ type ChainEntity struct {
 	Date   string
 }
 
+//WriteChainCacheToClients Sends ChainValues to the websocket for specified clients
 func (cc *ChainCache) WriteChainCacheToClients(clients map[*websocket.Conn]bool) {
 	for ws := range clients {
 		err := ws.WriteJSON(cc.ChainValues)
@@ -55,4 +56,5 @@ func (cc *ChainCache) StoreCache(e *sarama.ConsumerMessage) {
 	}
 	cc.ChainValues[entity.Symbol] = entity.Amount.String()
 	cc.ChainValuesHistory[entity.Symbol][entity.Date] = entity.Amount.String()
+	log.Println("[INFO] Stored from kafka to the cache", cc.ChainValues[entity.Symbol], " ", entity.Amount.String())
 }

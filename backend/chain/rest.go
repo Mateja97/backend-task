@@ -7,6 +7,7 @@ import (
 	"net/http"
 )
 
+//ChainValue rest api to receive changes from the chain and send received entity to the specified channel
 func (cc *ChainCache) ChainValue(ch chan ChainEntity) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var entity ChainEntity
