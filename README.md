@@ -20,3 +20,6 @@ Service that tracks on chain events and publish them to the kafka
 ## Chain Publisher <br>
 On post request call contract Set function
     go run ./backend/cmd/chainpublisherService -private.key=<private.key> -contract=0x3af33feDF748f5439CD04130A15356b96d3Ad3c6
+
+## Diagram
+![alt.text](https://github.com/Mateja97/backend-task/blob/master/diagram.png?raw=true)
