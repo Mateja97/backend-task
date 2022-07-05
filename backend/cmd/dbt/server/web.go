@@ -60,7 +60,9 @@ func (s *Server) CoinHistory() http.HandlerFunc {
 		t := time.Date(reqTime.Year(), reqTime.Month(), reqTime.Day(), 0, 0, 0, 0, time.UTC)
 
 		coinGecko := fmt.Sprintf("%.2f", c.MarketData.CurrentPrice["usd"])
+		s.cc.Lock()
 		chainValue := s.cc.ChainValuesHistory[c.Symbol][t.Format(layout)]
+		s.cc.Unlock()
 		val, err := strconv.Atoi(chainValue)
 		if err != nil {
 			log.Println("[ERROR] Convert val failed", err)
@@ -112,8 +114,10 @@ func (s *Server) CoinValues() http.HandlerFunc {
 			return
 		}
 		coinGecko := fmt.Sprintf("%.2f", c.MarketData.CurrentPrice["usd"])
-
+		s.cc.Lock()
 		chainValue := s.cc.ChainValues[c.Symbol]
+		s.cc.Unlock()
+
 		val, err := strconv.Atoi(chainValue)
 		if err != nil {
 			log.Println("[ERROR] Convert val failed", err)

@@ -19,8 +19,9 @@ func (cc *ChainCache) ChainValue(ch chan ChainEntity) http.HandlerFunc {
 		}
 		text := fmt.Sprintf("%s: $%s", entity.Symbol, entity.Amount.String())
 		log.Println(text)
-
+		cc.Lock()
 		cc.ChainValues[entity.Symbol] = entity.Amount.String()
+		cc.Unlock()
 		ch <- entity
 	}
 }

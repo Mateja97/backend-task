@@ -32,13 +32,22 @@ func (s *Server) CoinGeckoTracker() {
 				fmt.Println("[ERROR]Unmarshal CoinGecko failed", err)
 			}
 			price := c.MarketData.CurrentPrice["usd"]
-			if _, ok := s.cc.ChainValues[c.Symbol]; !ok {
-				log.Println("[INFO] Value for ", c.Symbol, " not found")
+			s.cc.Lock()
+			chainPrice, ok := s.cc.ChainValues[c.Symbol]
+			if !ok {
+				log.Println("[INFO] Value for ", c.Symbol, " not found in cache")
 				s.cc.ChainValues[c.Symbol] = ""
 				continue
 			}
+			s.cc.Unlock()
+
 			priceString := fmt.Sprintf("%d", int(price*100))
 			val, err := strconv.Atoi(priceString)
+			if err != nil {
+				log.Println("[ERROR] Convert val failed", err)
+				continue
+			}
+			valChain, err := strconv.Atoi(chainPrice)
 			if err != nil {
 				log.Println("[ERROR] Convert val failed", err)
 				continue
@@ -56,7 +65,7 @@ func (s *Server) CoinGeckoTracker() {
 				log.Fatal(err)
 			}
 			//Check if coing gecko price is 2% differs from the on chain value
-			if price*100 > float64(val*2/100) {
+			if price*100 > float64(valChain*2/100) {
 				resp, err := http.Post(s.publisherUrl+"/publish", "application/json", bytes.NewBuffer(req_json))
 				if err != nil || resp.StatusCode != 200 {
 					log.Println("[ERROR] Sending data to publisher failed: ", err)
