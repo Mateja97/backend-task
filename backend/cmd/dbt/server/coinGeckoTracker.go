@@ -32,14 +32,12 @@ func (s *Server) CoinGeckoTracker() {
 				fmt.Println("[ERROR]Unmarshal CoinGecko failed", err)
 			}
 			price := c.MarketData.CurrentPrice["usd"]
-			s.cc.Lock()
 			chainPrice, ok := s.cc.ChainValues[c.Symbol]
 			if !ok {
 				log.Println("[INFO] Value for ", c.Symbol, " not found in cache")
-				s.cc.ChainValues[c.Symbol] = ""
+				s.cc.ChainValues[c.Symbol] = "0"
 				continue
 			}
-			s.cc.Unlock()
 
 			priceString := fmt.Sprintf("%d", int(price*100))
 			val, err := strconv.Atoi(priceString)

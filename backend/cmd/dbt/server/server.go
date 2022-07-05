@@ -28,7 +28,7 @@ type Server struct {
 }
 
 func (s *Server) Init(port, wsPort, publisher, topic string, brokers, ids []string) error {
-	s.ticker = time.NewTicker(60 * time.Second)
+	s.ticker = time.NewTicker(5 * time.Second)
 	s.chEntity = make(chan chain.ChainEntity)
 	s.kafkaMessages = make(chan *sarama.ConsumerMessage)
 	s.publisherUrl = publisher

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"math/big"
-	"sync"
 
 	"github.com/Shopify/sarama"
 	"github.com/gorilla/websocket"
@@ -15,8 +14,6 @@ type ChainCache struct {
 	ChainValues map[string]string
 	//ex: coin/date/amount
 	ChainValuesHistory map[string]map[string]string
-
-	sync.RWMutex //ChainCache lock
 }
 
 func (cc *ChainCache) Init() {
@@ -34,9 +31,7 @@ type ChainEntity struct {
 //WriteChainCacheToClients Sends ChainValues to the websocket for specified clients
 func (cc *ChainCache) WriteChainCacheToClients(clients map[*websocket.Conn]bool) {
 	for ws := range clients {
-		cc.Lock()
 		err := ws.WriteJSON(cc.ChainValues)
-		cc.Unlock()
 		if err != nil {
 			log.Println("[ERROR] Sending json: ", err)
 			ws.Close()
@@ -53,12 +48,11 @@ func (cc *ChainCache) StoreCache(e *sarama.ConsumerMessage) {
 	if entity == (ChainEntity{}) {
 		return
 	}
-	cc.Lock()
-	defer cc.Unlock()
 	if _, ok := cc.ChainValuesHistory[entity.Symbol]; !ok {
 		cc.ChainValuesHistory[entity.Symbol] = make(map[string]string)
 	}
 	cc.ChainValues[entity.Symbol] = entity.Amount.String()
 	cc.ChainValuesHistory[entity.Symbol][entity.Date] = entity.Amount.String()
 	log.Println("[INFO] Stored from kafka to the cache", entity.Symbol, " ", cc.ChainValues[entity.Symbol])
+
 }
